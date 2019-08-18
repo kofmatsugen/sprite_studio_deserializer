@@ -15,12 +15,12 @@ pub enum ValueType {
 }
 
 #[derive(Debug)]
-pub struct Value {
+pub(crate) struct Value {
     values: Vec<ValueType>,
 }
 
 impl Value {
-    pub fn values(&self) -> impl Iterator<Item = &ValueType> {
+    pub(crate) fn values(&self) -> impl Iterator<Item = &ValueType> {
         self.values.iter()
     }
 }
