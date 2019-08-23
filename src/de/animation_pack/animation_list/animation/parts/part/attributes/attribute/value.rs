@@ -12,6 +12,10 @@ pub enum ValueType {
     EndLabel(String),
     StartOffset(i32),
     EndOffset(i32),
+    Integer(i32),
+    Point(f32, f32),
+    Rect(f32, f32, f32, f32),
+    Text(String),
 }
 
 #[derive(Debug)]
@@ -85,6 +89,44 @@ impl<'de> Visitor<'de> for ValueVisitor {
                 "speed" => {
                     let v = map.next_value()?;
                     vec.push(ValueType::Speed(v));
+                }
+                "integer" => {
+                    let v = map.next_value()?;
+                    vec.push(ValueType::Integer(v));
+                }
+                "string" => {
+                    let v = map.next_value()?;
+                    vec.push(ValueType::Text(v));
+                }
+                "point" => {
+                    let p_str = map.next_value::<String>()?;
+                    let pos: Vec<f32> = p_str
+                        .split(char::is_whitespace)
+                        .filter_map(|v| v.parse().ok())
+                        .collect();
+                    let x = pos.get(0).cloned();
+                    let y = pos.get(1).cloned();
+                    vec.push(ValueType::Point(
+                        x.ok_or(A::Error::custom(&format!("x value is not found")))?,
+                        y.ok_or(A::Error::custom(&format!("y value is not found")))?,
+                    ));
+                }
+                "rect" => {
+                    let p_str = map.next_value::<String>()?;
+                    let pos: Vec<f32> = p_str
+                        .split(char::is_whitespace)
+                        .filter_map(|v| v.parse().ok())
+                        .collect();
+                    let x = pos.get(0).cloned();
+                    let y = pos.get(1).cloned();
+                    let w = pos.get(2).cloned();
+                    let h = pos.get(3).cloned();
+                    vec.push(ValueType::Rect(
+                        x.ok_or(A::Error::custom(&format!("x value is not found")))?,
+                        y.ok_or(A::Error::custom(&format!("y value is not found")))?,
+                        w.ok_or(A::Error::custom(&format!("w value is not found")))?,
+                        h.ok_or(A::Error::custom(&format!("h value is not found")))?,
+                    ));
                 }
                 _ => Err(A::Error::custom(&format!("unsupported value: {}", k)))?,
             }
