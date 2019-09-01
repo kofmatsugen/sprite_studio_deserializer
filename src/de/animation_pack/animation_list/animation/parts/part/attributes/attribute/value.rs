@@ -30,16 +30,16 @@ struct InnerColor {
 
 impl Into<(f32, f32, f32, f32)> for InnerColor {
     fn into(self) -> (f32, f32, f32, f32) {
-        let alpha_int: u8 = u8::from_str_radix(&self.rgba[0..2], 16).unwrap();
-        let red_int: u8 = u8::from_str_radix(&self.rgba[2..4], 16).unwrap();
-        let green_int: u8 = u8::from_str_radix(&self.rgba[4..6], 16).unwrap();
-        let blue_int: u8 = u8::from_str_radix(&self.rgba[6..8], 16).unwrap();
+        let alpha = u8::from_str_radix(&self.rgba[0..2], 16).unwrap() as f32 / 255.;
+        let red = u8::from_str_radix(&self.rgba[2..4], 16).unwrap() as f32 / 255.;
+        let green = u8::from_str_radix(&self.rgba[4..6], 16).unwrap() as f32 / 255.;
+        let blue = u8::from_str_radix(&self.rgba[6..8], 16).unwrap() as f32 / 255.;
 
         (
-            (red_int as f32) / 255.,
-            (green_int as f32) / 255.,
-            (blue_int as f32) / 255.,
-            (alpha_int as f32) / 255.,
+            red * self.rate + 1. - self.rate,
+            green * self.rate + 1. - self.rate,
+            blue * self.rate + 1. - self.rate,
+            alpha * self.rate + 1. - self.rate,
         )
     }
 }
