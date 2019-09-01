@@ -1,4 +1,5 @@
 use serde::de::*;
+use serde::Deserialize;
 use std::fmt;
 
 #[derive(Debug)]
@@ -16,8 +17,32 @@ pub enum ValueType {
     Point(f32, f32),
     Rect(f32, f32, f32, f32),
     Text(String),
+    Target(String),
+    BlendType(String),
+    Color(f32, f32, f32, f32),
 }
 
+#[derive(Debug, Clone, Deserialize)]
+struct InnerColor {
+    pub rgba: String,
+    pub rate: f32,
+}
+
+impl Into<(f32, f32, f32, f32)> for InnerColor {
+    fn into(self) -> (f32, f32, f32, f32) {
+        let alpha_int: u8 = u8::from_str_radix(&self.rgba[0..2], 16).unwrap();
+        let red_int: u8 = u8::from_str_radix(&self.rgba[2..4], 16).unwrap();
+        let green_int: u8 = u8::from_str_radix(&self.rgba[4..6], 16).unwrap();
+        let blue_int: u8 = u8::from_str_radix(&self.rgba[6..8], 16).unwrap();
+
+        (
+            (red_int as f32) / 255.,
+            (green_int as f32) / 255.,
+            (blue_int as f32) / 255.,
+            (alpha_int as f32) / 255.,
+        )
+    }
+}
 #[derive(Debug)]
 pub(crate) struct Value {
     values: Vec<ValueType>,
@@ -127,6 +152,19 @@ impl<'de> Visitor<'de> for ValueVisitor {
                         w.ok_or(A::Error::custom(&format!("w value is not found")))?,
                         h.ok_or(A::Error::custom(&format!("h value is not found")))?,
                     ));
+                }
+                "color" => {
+                    let inner = map.next_value::<InnerColor>()?;
+                    let (r, g, b, a) = inner.into();
+                    vec.push(ValueType::Color(r, g, b, a));
+                }
+                "target" => {
+                    let v = map.next_value()?;
+                    vec.push(ValueType::Target(v));
+                }
+                "blendType" => {
+                    let v = map.next_value()?;
+                    vec.push(ValueType::BlendType(v));
                 }
                 _ => Err(A::Error::custom(&format!("unsupported value: {}", k)))?,
             }
