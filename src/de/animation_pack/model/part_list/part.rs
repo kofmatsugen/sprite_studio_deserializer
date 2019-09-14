@@ -1,7 +1,11 @@
 mod bounds;
+mod inherit_rate;
+mod inherit_type;
 mod part_type;
 
 pub use self::bounds::*;
+pub use self::inherit_rate::*;
+pub use self::inherit_type::*;
 pub use self::part_type::*;
 use serde::Deserialize;
 
@@ -17,6 +21,14 @@ pub struct Part {
     part_type: PartType,
     #[serde(rename = "boundsType")]
     bounds: BoundsType,
+    #[serde(rename = "inheritType")]
+    inherit_type: InheritType,
+    #[serde(rename = "refAnimePack")]
+    refference_anime_pack: Option<String>,
+    #[serde(rename = "refAnime")]
+    refference_anime: Option<String>,
+    #[serde(rename = "ineheritRates")]
+    inherit_flags: InheritFlag,
 }
 
 impl Part {

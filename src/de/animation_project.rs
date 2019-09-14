@@ -35,7 +35,7 @@ mod tests {
     fn xml_animation_project_deserialize_test() {
         use serde_xml_rs::*;
 
-        let s = include_str!("../../../data/sprite_studio/houou.sspj");
+        let s = include_str!("../../../data/sprite_studio/houou/houou.sspj");
 
         let _data: AnimationProject = from_reader(s.as_bytes()).unwrap();
 

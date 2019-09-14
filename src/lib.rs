@@ -40,7 +40,9 @@ impl SpriteStudioData {
     }
 }
 
-pub fn load_project<P: AsRef<Path>>(path: P) -> Result<SpriteStudioData, Box<std::error::Error>> {
+pub fn load_project<P: AsRef<Path>>(
+    path: P,
+) -> Result<SpriteStudioData, Box<dyn std::error::Error>> {
     let path = path.as_ref();
     let mut data = SpriteStudioData::default();
 

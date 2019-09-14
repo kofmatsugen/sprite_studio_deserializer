@@ -38,7 +38,7 @@ mod tests {
     fn xml_animation_cell_deserialize_test() {
         use serde_xml_rs::*;
 
-        let s = include_str!("../../../data/sprite_studio/houou.ssce");
+        let s = include_str!("../../../data/sprite_studio/houou/houou.ssce");
 
         let _data: AnimationCells = from_reader(s.as_bytes()).unwrap();
     }

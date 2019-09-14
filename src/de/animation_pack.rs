@@ -49,7 +49,7 @@ mod tests {
     fn xml_animation_pack_deserialize_test() {
         use serde_xml_rs::*;
 
-        let s = include_str!("../../../data/sprite_studio/houou.ssae");
+        let s = include_str!("../../../data/sprite_studio/houou/houou.ssae");
 
         let _data: AnimationPack = from_reader(s.as_bytes()).unwrap();
     }
