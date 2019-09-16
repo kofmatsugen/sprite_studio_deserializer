@@ -51,4 +51,14 @@ impl Part {
     pub fn bounds(&self) -> &BoundsType {
         &self.bounds
     }
+
+    pub fn refference_animation(&self) -> Option<(&str, &str)> {
+        match (
+            self.refference_anime_pack.as_ref(),
+            self.refference_anime.as_ref(),
+        ) {
+            (Some(pack), Some(anim)) => Some((pack, anim)),
+            _ => None,
+        }
+    }
 }

@@ -20,6 +20,10 @@ pub enum ValueType {
     Target(String),
     BlendType(String),
     Color(f32, f32, f32, f32),
+    Infinity(bool),
+    Reverse(bool),
+    PingPong(bool),
+    Indipendent(bool),
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -165,6 +169,26 @@ impl<'de> Visitor<'de> for ValueVisitor {
                 "blendType" => {
                     let v = map.next_value()?;
                     vec.push(ValueType::BlendType(v));
+                }
+                "infinity" => {
+                    let v = map.next_value::<u8>()?;
+                    let v = v == 1;
+                    vec.push(ValueType::Infinity(v));
+                }
+                "reverse" => {
+                    let v = map.next_value::<u8>()?;
+                    let v = v == 1;
+                    vec.push(ValueType::Reverse(v));
+                }
+                "pingpong" => {
+                    let v = map.next_value::<u8>()?;
+                    let v = v == 1;
+                    vec.push(ValueType::PingPong(v));
+                }
+                "independent" => {
+                    let v = map.next_value::<u8>()?;
+                    let v = v == 1;
+                    vec.push(ValueType::Indipendent(v));
                 }
                 _ => Err(A::Error::custom(&format!("unsupported value: {}", k)))?,
             }
