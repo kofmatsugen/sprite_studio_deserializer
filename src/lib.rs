@@ -2,10 +2,17 @@ mod de;
 
 pub use de::*;
 
+use failure::Fail;
 use serde_xml_rs::*;
 use std::fs::File;
 use std::io::BufReader;
 use std::path::{Path, PathBuf};
+
+#[derive(Debug, Fail)]
+enum SerdeXmlError {
+    #[fail(display = "{}", err)]
+    Error { err: serde_xml_rs::ErrorKind },
+}
 
 #[derive(Default, Debug)]
 pub struct SpriteStudioData {
@@ -40,16 +47,15 @@ impl SpriteStudioData {
     }
 }
 
-pub fn load_project<P: AsRef<Path>>(
-    path: P,
-) -> Result<SpriteStudioData, Box<dyn std::error::Error>> {
+pub fn load_project<P: AsRef<Path>>(path: P) -> Result<SpriteStudioData, failure::Error> {
     let path = path.as_ref();
     let mut data = SpriteStudioData::default();
 
     let file = File::open(path)?;
     let buf_reader = BufReader::new(file);
 
-    let project_data: AnimationProject = from_reader(buf_reader)?;
+    let project_data: AnimationProject = from_reader(buf_reader)
+        .map_err(|serde_xml_rs::Error(err, _)| SerdeXmlError::Error { err })?;
     if let Some(parent) = path.parent() {
         for cell in project_data.cell_maps() {
             let mut path = PathBuf::new();
@@ -57,7 +63,8 @@ pub fn load_project<P: AsRef<Path>>(
             path.push(cell);
             let file = File::open(path)?;
             let buf_reader = BufReader::new(file);
-            let cell_data: AnimationCells = from_reader(buf_reader)?;
+            let cell_data: AnimationCells = from_reader(buf_reader)
+                .map_err(|serde_xml_rs::Error(err, _)| SerdeXmlError::Error { err })?;
             data.cell_maps.push(cell_data);
         }
         for map in project_data.anim_packs() {
@@ -66,7 +73,8 @@ pub fn load_project<P: AsRef<Path>>(
             path.push(map);
             let file = File::open(path)?;
             let buf_reader = BufReader::new(file);
-            let pack_data: AnimationPack = from_reader(buf_reader)?;
+            let pack_data: AnimationPack = from_reader(buf_reader)
+                .map_err(|serde_xml_rs::Error(err, _)| SerdeXmlError::Error { err })?;
             data.packs.push(pack_data);
         }
     }
