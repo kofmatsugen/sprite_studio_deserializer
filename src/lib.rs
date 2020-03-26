@@ -11,7 +11,7 @@ use std::path::{Path, PathBuf};
 #[derive(Debug, Fail)]
 enum SerdeXmlError {
     #[fail(display = "{}", err)]
-    Error { err: serde_xml_rs::ErrorKind },
+    Error { err: serde_xml_rs::Error },
 }
 
 #[derive(Default, Debug)]
@@ -55,7 +55,7 @@ pub fn load_project<P: AsRef<Path>>(path: P) -> Result<SpriteStudioData, failure
     let buf_reader = BufReader::new(file);
 
     let project_data: AnimationProject = from_reader(buf_reader)
-        .map_err(|serde_xml_rs::Error(err, _)| SerdeXmlError::Error { err })?;
+        .map_err(|err| SerdeXmlError::Error { err })?;
     if let Some(parent) = path.parent() {
         for cell in project_data.cell_maps() {
             let mut path = PathBuf::new();
@@ -64,7 +64,7 @@ pub fn load_project<P: AsRef<Path>>(path: P) -> Result<SpriteStudioData, failure
             let file = File::open(path)?;
             let buf_reader = BufReader::new(file);
             let cell_data: AnimationCells = from_reader(buf_reader)
-                .map_err(|serde_xml_rs::Error(err, _)| SerdeXmlError::Error { err })?;
+                .map_err(|err| SerdeXmlError::Error { err })?;
             data.cell_maps.push(cell_data);
         }
         for map in project_data.anim_packs() {
@@ -74,7 +74,7 @@ pub fn load_project<P: AsRef<Path>>(path: P) -> Result<SpriteStudioData, failure
             let file = File::open(path)?;
             let buf_reader = BufReader::new(file);
             let pack_data: AnimationPack = from_reader(buf_reader)
-                .map_err(|serde_xml_rs::Error(err, _)| SerdeXmlError::Error { err })?;
+                .map_err(|err| SerdeXmlError::Error { err })?;
             data.packs.push(pack_data);
         }
     }
