@@ -1,7 +1,9 @@
 mod animation_list;
+mod cell_map_names;
 mod model;
 
 pub use self::animation_list::*;
+pub use self::cell_map_names::CellMapNames;
 pub use self::model::*;
 use serde::Deserialize;
 
@@ -12,6 +14,8 @@ pub struct AnimationPack {
     animations: AnimationList,
     #[serde(rename = "Model")]
     model: Model,
+    #[serde(rename = "cellmapNames")]
+    cell_map_names: CellMapNames,
 }
 
 impl AnimationPack {
@@ -40,6 +44,10 @@ impl AnimationPack {
         }
         self.parts().find(|part| part.index() == index)
     }
+
+    pub fn cell_map_names(&self) -> impl Iterator<Item = &str> {
+        self.cell_map_names.values()
+    }
 }
 
 #[cfg(test)]
@@ -49,7 +57,9 @@ mod tests {
     fn xml_animation_pack_deserialize_test() {
         use serde_xml_rs::*;
 
-        let s = include_str!("../../../data/sprite_studio/houou/houou.ssae");
+        let s = include_str!(
+            "../../../data/sprite_studio/template/template/character_template_2head.ssae"
+        );
 
         let _data: AnimationPack = from_reader(s.as_bytes()).unwrap();
     }
