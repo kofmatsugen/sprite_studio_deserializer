@@ -24,6 +24,12 @@ pub enum ValueType {
     Reverse(bool),
     PingPong(bool),
     Indipendent(bool),
+    VertexLT(f32, f32),
+    VertexRT(f32, f32),
+    VertexLB(f32, f32),
+    VertexRB(f32, f32),
+    DeformSize(usize), //Deform により移動する点
+    Deform(Vec<(usize, f32, f32)>),
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -190,6 +196,106 @@ impl<'de> Visitor<'de> for ValueVisitor {
                     let v = v == 1;
                     vec.push(ValueType::Indipendent(v));
                 }
+                "LT" => {
+                    let p_str = map.next_value::<String>()?;
+                    let pos: Vec<f32> = p_str
+                        .split(char::is_whitespace)
+                        .filter_map(|v| v.parse().ok())
+                        .collect();
+                    let x = pos.get(0).cloned();
+                    let y = pos.get(1).cloned();
+                    vec.push(ValueType::VertexLT(
+                        x.ok_or(A::Error::custom(&format!("LT x value is not found")))?,
+                        y.ok_or(A::Error::custom(&format!("LT x value is not found")))?,
+                    ));
+                }
+                "RT" => {
+                    let p_str = map.next_value::<String>()?;
+                    let pos: Vec<f32> = p_str
+                        .split(char::is_whitespace)
+                        .filter_map(|v| v.parse().ok())
+                        .collect();
+                    let x = pos.get(0).cloned();
+                    let y = pos.get(1).cloned();
+                    vec.push(ValueType::VertexRT(
+                        x.ok_or(A::Error::custom(&format!("RT x value is not found")))?,
+                        y.ok_or(A::Error::custom(&format!("RT x value is not found")))?,
+                    ));
+                }
+                "LB" => {
+                    let p_str = map.next_value::<String>()?;
+                    let pos: Vec<f32> = p_str
+                        .split(char::is_whitespace)
+                        .filter_map(|v| v.parse().ok())
+                        .collect();
+                    let x = pos.get(0).cloned();
+                    let y = pos.get(1).cloned();
+                    vec.push(ValueType::VertexLB(
+                        x.ok_or(A::Error::custom(&format!("LB x value is not found")))?,
+                        y.ok_or(A::Error::custom(&format!("LB x value is not found")))?,
+                    ));
+                }
+                "RB" => {
+                    let p_str = map.next_value::<String>()?;
+                    let pos: Vec<f32> = p_str
+                        .split(char::is_whitespace)
+                        .filter_map(|v| v.parse().ok())
+                        .collect();
+                    let x = pos.get(0).cloned();
+                    let y = pos.get(1).cloned();
+                    vec.push(ValueType::VertexRB(
+                        x.ok_or(A::Error::custom(&format!("RB x value is not found")))?,
+                        y.ok_or(A::Error::custom(&format!("RB x value is not found")))?,
+                    ));
+                }
+                "vsize" => {
+                    let size = map.next_value::<String>()?;
+                    let size = size.parse().map_err(|e| {
+                        A::Error::custom(&format!("deform size fail parse: {}, {:?}", size, e))
+                    })?;
+
+                    vec.push(ValueType::DeformSize(size));
+                }
+                "vchg" => {
+                    let p_str = map.next_value::<String>()?;
+                    let pos = p_str.split(char::is_whitespace).skip(1).collect::<Vec<_>>();
+
+                    let mut deforms = vec![];
+                    let len = pos.len() / 3;
+
+                    for i in 0..len {
+                        match &pos[i * 3..i * 3 + 3] {
+                            [index, x, y] => {
+                                let index = index.parse().map_err(|e| {
+                                    A::Error::custom(&format!(
+                                        "deform index fail parse: {}, {:?}",
+                                        index, e
+                                    ))
+                                })?;
+                                let x = x.parse().map_err(|e| {
+                                    A::Error::custom(&format!(
+                                        "deform x fail parse: {}, {:?}",
+                                        x, e
+                                    ))
+                                })?;
+                                let y = y.parse().map_err(|e| {
+                                    A::Error::custom(&format!(
+                                        "deform y fail parse: {}, {:?}",
+                                        y, e
+                                    ))
+                                })?;
+                                deforms.push((index, x, y));
+                            }
+                            _ => {
+                                Err(A::Error::custom(&format!(
+                                    "deform value is not multiples of 3"
+                                )))?;
+                            }
+                        }
+                    }
+                    vec.push(ValueType::Deform(deforms));
+                }
+
                 _ => Err(A::Error::custom(&format!("unsupported value: {}", k)))?,
             }
         }

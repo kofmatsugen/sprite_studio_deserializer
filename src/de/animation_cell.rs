@@ -48,7 +48,7 @@ mod tests {
     fn xml_animation_cell_deserialize_test() {
         use serde_xml_rs::*;
 
-        let s = include_str!("../../../data/sprite_studio/template/template/character_2head.ssce");
+        let s = include_str!("../../../data/sprite_studio/splash/splash1024/splash1024.ssce");
 
         let _data: AnimationCells = from_reader(s.as_bytes()).unwrap();
     }

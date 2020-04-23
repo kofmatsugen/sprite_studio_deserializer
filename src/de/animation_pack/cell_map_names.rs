@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CellMapNames {
+    #[serde(default)]
     value: Vec<String>,
 }
 

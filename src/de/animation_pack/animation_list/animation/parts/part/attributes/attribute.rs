@@ -92,6 +92,8 @@ pub enum AttributeTag {
     User,
     #[serde(rename = "IPRM")]
     Instance,
+    #[serde(rename = "DEFM")]
+    Deform,
 }
 
 #[derive(Deserialize, Debug, Clone, Copy)]
