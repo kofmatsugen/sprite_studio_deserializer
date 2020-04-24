@@ -13,4 +13,5 @@ pub enum PartType {
     Bone,
     Joint,
     Armature,
+    Effect,
 }

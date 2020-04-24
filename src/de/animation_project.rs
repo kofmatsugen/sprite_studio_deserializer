@@ -2,10 +2,12 @@ use serde::Deserialize;
 
 #[derive(Debug, Deserialize)]
 pub(crate) struct AnimationProject {
-    #[serde(rename = "cellmapNames")]
+    #[serde(default, rename = "cellmapNames")]
     cell_map_names: CellMapNames,
-    #[serde(rename = "animepackNames")]
+    #[serde(default, rename = "animepackNames")]
     anime_map_names: AnimeMapNames,
+    #[serde(default, rename = "effectFileNames")]
+    effect_file_names: EffectFileNames,
 }
 
 impl AnimationProject {
@@ -16,15 +18,26 @@ impl AnimationProject {
     pub(crate) fn anim_packs(&self) -> impl Iterator<Item = &str> {
         self.anime_map_names.value.iter().map(|name| name.as_ref())
     }
+    pub(crate) fn effect_files(&self) -> impl Iterator<Item = &str> {
+        self.effect_file_names
+            .value
+            .iter()
+            .map(|name| name.as_ref())
+    }
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Default, Debug, Deserialize)]
 struct CellMapNames {
     value: Vec<String>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Default, Debug, Deserialize)]
 struct AnimeMapNames {
+    value: Vec<String>,
+}
+
+#[derive(Default, Debug, Deserialize)]
+struct EffectFileNames {
     value: Vec<String>,
 }
 

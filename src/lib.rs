@@ -18,6 +18,7 @@ enum SerdeXmlError {
 pub struct SpriteStudioData {
     cell_maps: Vec<AnimationCells>,
     packs: Vec<AnimationPack>,
+    effects: Vec<AnimationEffect>,
 }
 
 impl SpriteStudioData {
@@ -27,6 +28,10 @@ impl SpriteStudioData {
 
     pub fn packs(&self) -> impl Iterator<Item = &AnimationPack> {
         self.packs.iter()
+    }
+
+    pub fn effects(&self) -> impl Iterator<Item = &AnimationEffect> {
+        self.effects.iter()
     }
 
     pub fn cell(&self, map_id: usize, part_name: &str) -> Option<&Cell> {
@@ -79,6 +84,17 @@ pub fn load_project<P: AsRef<Path>>(path: P) -> Result<SpriteStudioData, failure
             let pack_data: AnimationPack =
                 from_reader(buf_reader).map_err(|err| SerdeXmlError::Error { err })?;
             data.packs.push(pack_data);
+        }
+        for effect in project_data.effect_files() {
+            let mut path = PathBuf::new();
+            path.push(parent);
+            path.push(effect);
+            log::info!("load effect: {:?}", path);
+            let file = File::open(path)?;
+            let buf_reader = BufReader::new(file);
+            let effect_data =
+                from_reader(buf_reader).map_err(|err| SerdeXmlError::Error { err })?;
+            data.effects.push(effect_data);
         }
     }
 

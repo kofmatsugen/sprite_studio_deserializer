@@ -63,7 +63,7 @@ pub enum AttributeTag {
     #[serde(rename = "FLPV")]
     Flipv,
     Hide,
-    #[serde(rename = "VCOL")]
+    #[serde(rename = "PCOL")]
     Color,
     #[serde(rename = "VERT")]
     Vertex,
@@ -94,6 +94,8 @@ pub enum AttributeTag {
     Instance,
     #[serde(rename = "DEFM")]
     Deform,
+    #[serde(rename = "EFCT")]
+    Effect,
 }
 
 #[derive(Deserialize, Debug, Clone, Copy)]
