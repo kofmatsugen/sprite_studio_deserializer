@@ -1,9 +1,9 @@
 mod effect_data;
 
 pub use effect_data::*;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct AnimationEffect {
     name: String,

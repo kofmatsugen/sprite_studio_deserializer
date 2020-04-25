@@ -3,9 +3,9 @@ mod list;
 
 pub use blend_type::*;
 pub use list::*;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Debug)]
 pub struct EffectBehavior {
     #[serde(rename = "CellName")]
     cell_name: String,
@@ -13,4 +13,5 @@ pub struct EffectBehavior {
     cell_map_name: String,
     #[serde(rename = "BlendType")]
     blend_type: BlendType,
+    list: BehaviorAtrributeList,
 }

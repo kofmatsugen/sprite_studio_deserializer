@@ -3,15 +3,15 @@ mod node_type;
 
 pub use behavior::*;
 pub use node_type::*;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct EffectNode {
     node: Vec<EffectNodeElem>,
 }
 
-#[derive(Deserialize, Serialize, Debug)]
+#[derive(Deserialize, Debug)]
 #[serde(rename_all = "camelCase")]
 pub struct EffectNodeElem {
     name: String,
