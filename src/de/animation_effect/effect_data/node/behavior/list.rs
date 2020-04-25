@@ -71,6 +71,13 @@ pub enum BehaviorAttribute {
     TransSpeed {
         speed: (f32, f32),
     },
+    AddPointgravity {
+        position: (f32, f32),
+        power: f32,
+    },
+    TurnToDirection {
+        turn_to_rotation: f32,
+    },
 }
 
 struct InnerColor(String);
@@ -139,6 +146,11 @@ struct BehaviorBuilder {
     scale: Option<(f32, f32)>,
 
     acceleration: Option<(f32, f32)>,
+
+    position: Option<(f32, f32)>,
+    power: Option<f32>,
+
+    turn_to_rotation: Option<f32>,
 }
 
 #[derive(Deserialize, Debug)]
@@ -252,8 +264,13 @@ impl<'de> Visitor<'de> for AttributeVisitor {
                     builder.seed = Some(seed);
                 }
                 "Rotation" => {
-                    let rotation: RangeValue<f32> = map.next_value()?;
-                    builder.rotation = Some((rotation.value, rotation.subvalue));
+                    if let Some("TurnToDirection") = builder.name.as_ref().map(String::as_str) {
+                        let turn_to_rotation = map.next_value()?;
+                        builder.turn_to_rotation = Some(turn_to_rotation);
+                    } else {
+                        let rotation = map.next_value::<RangeValue<f32>>()?;
+                        builder.rotation = Some((rotation.value, rotation.subvalue));
+                    }
                 }
                 "RotationAdd" => {
                     let add_rotation: RangeValue<f32> = map.next_value()?;
@@ -282,6 +299,24 @@ impl<'de> Visitor<'de> for AttributeVisitor {
                 "Acceleration" => {
                     let acceleration: RangeValue<f32> = map.next_value()?;
                     builder.acceleration = Some((acceleration.value, acceleration.subvalue));
+                }
+                "Position" => {
+                    let p_str = map.next_value::<String>()?;
+                    let pos: Vec<f32> = p_str
+                        .split(char::is_whitespace)
+                        .filter_map(|v| v.parse().ok())
+                        .collect();
+
+                    builder.position = Some((
+                        *pos.get(0)
+                            .ok_or(A::Error::custom(&format!("position x value is not found")))?,
+                        *pos.get(1)
+                            .ok_or(A::Error::custom(&format!("position x value is not found")))?,
+                    ));
+                }
+                "Power" => {
+                    let power = map.next_value()?;
+                    builder.power = Some(power);
                 }
                 _ => Err(A::Error::custom(&format!("unsupported value: {}", k)))?,
             }
@@ -411,6 +446,19 @@ impl<'de> Visitor<'de> for AttributeVisitor {
                 speed: builder
                     .speed
                     .ok_or(A::Error::custom("not set value speed"))?,
+            },
+            Some("add_pointgravity") => BehaviorAttribute::AddPointgravity {
+                position: builder
+                    .position
+                    .ok_or(A::Error::custom("not set value position"))?,
+                power: builder
+                    .power
+                    .ok_or(A::Error::custom("not set value power"))?,
+            },
+            Some("TurnToDirection") => BehaviorAttribute::TurnToDirection {
+                turn_to_rotation: builder
+                    .turn_to_rotation
+                    .ok_or(A::Error::custom("not set value turn_to_rotation"))?,
             },
             Some(name) => Err(A::Error::custom(&format!(
                 "unsupported attribute name: {}",
