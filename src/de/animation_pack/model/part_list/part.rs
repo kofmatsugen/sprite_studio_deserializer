@@ -27,6 +27,8 @@ pub struct Part {
     refference_anime_pack: Option<String>,
     #[serde(rename = "refAnime")]
     refference_anime: Option<String>,
+    #[serde(rename = "refEffectName")]
+    refference_effect: Option<String>,
     #[serde(rename = "ineheritRates")]
     inherit_flags: InheritFlag,
 }
@@ -60,5 +62,9 @@ impl Part {
             (Some(pack), Some(anim)) => Some((pack, anim)),
             _ => None,
         }
+    }
+
+    pub fn refference_effect(&self) -> Option<&str> {
+        self.refference_effect.as_ref().map(String::as_ref)
     }
 }

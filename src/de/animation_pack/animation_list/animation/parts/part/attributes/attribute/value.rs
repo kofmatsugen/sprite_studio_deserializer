@@ -30,7 +30,7 @@ pub enum ValueType {
     VertexRB(f32, f32),
     DeformSize(usize), //Deform により移動する点
     Deform(Vec<(usize, f32, f32)>),
-    StartTime(u32),
+    StartTime(usize),
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -297,7 +297,7 @@ impl<'de> Visitor<'de> for ValueVisitor {
                     vec.push(ValueType::Deform(deforms));
                 }
                 "startTime" => {
-                    let time = map.next_value::<u32>()?;
+                    let time = map.next_value()?;
                     vec.push(ValueType::StartTime(time));
                 }
                 _ => Err(A::Error::custom(&format!("unsupported value: {}", k)))?,

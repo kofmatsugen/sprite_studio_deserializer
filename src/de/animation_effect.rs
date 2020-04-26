@@ -10,6 +10,12 @@ pub struct AnimationEffect {
     effect_data: EffectData,
 }
 
+impl AnimationEffect {
+    pub fn name(&self) -> &str {
+        self.name.as_str()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

@@ -94,7 +94,6 @@ pub fn load_project<P: AsRef<Path>>(path: P) -> Result<SpriteStudioData, failure
             let buf_reader = BufReader::new(file);
             let effect_data =
                 from_reader(buf_reader).map_err(|err| SerdeXmlError::Error { err })?;
-            log::info!("{:#?}", effect_data);
             data.effects.push(effect_data);
         }
     }

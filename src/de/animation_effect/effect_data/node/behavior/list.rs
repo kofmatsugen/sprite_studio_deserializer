@@ -84,7 +84,6 @@ struct InnerColor(String);
 
 impl Into<(f32, f32, f32, f32)> for InnerColor {
     fn into(self) -> (f32, f32, f32, f32) {
-        log::info!("color => {}", self.0);
         let alpha = u8::from_str_radix(&self.0[0..2], 16).unwrap() as f32 / 255.;
         let red = u8::from_str_radix(&self.0[2..4], 16).unwrap() as f32 / 255.;
         let green = u8::from_str_radix(&self.0[4..6], 16).unwrap() as f32 / 255.;
@@ -172,12 +171,16 @@ impl<'de> Visitor<'de> for AttributeVisitor {
     {
         let mut builder = BehaviorBuilder::default();
         while let Some(k) = map.next_key::<String>()? {
-            log::info!("key_name: {}", k);
             match k.as_ref() {
                 "name" => {
-                    let name = map.next_value()?;
+                    let name: String = map.next_value()?;
                     if let Some(current) = builder.name.as_ref() {
-                        log::warn!("conflict name: {} <=> {}", current, name);
+                        if current != name.as_str() {
+                            Err(A::Error::custom(&format!(
+                                "conflict effect behaviour name: {} <=> {}",
+                                current, name,
+                            )))?;
+                        }
                     }
                     builder.name = Some(name);
                 }
