@@ -55,8 +55,14 @@ pub enum AttributeTag {
     Rotz,
     Sclx,
     Scly,
+    #[serde(rename = "LSCX")]
+    LocalScaleX,
+    #[serde(rename = "LSCY")]
+    LocalScaleY,
     #[serde(rename = "ALPH")]
     Alpha,
+    #[serde(rename = "LALP")]
+    LocalAlpha,
     Prio,
     #[serde(rename = "FLPH")]
     Fliph,
@@ -88,6 +94,7 @@ pub enum AttributeTag {
     Uvrz,
     Uvsx,
     Uvsy,
+    #[serde(rename = "BNDR")]
     Boundr,
     User,
     #[serde(rename = "IPRM")]
@@ -96,6 +103,7 @@ pub enum AttributeTag {
     Deform,
     #[serde(rename = "EFCT")]
     Effect,
+    Mask,
 }
 
 #[derive(Deserialize, Debug, Clone, Copy)]
