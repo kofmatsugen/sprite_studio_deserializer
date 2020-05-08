@@ -23,7 +23,7 @@ mod tests {
     fn xml_animation_pack_deserialize_test() {
         use serde_xml_rs::*;
 
-        let s = include_str!("../../../data/sprite_studio/basic_sample/Effect/Beam_effects.ssee");
+        let s = include_str!("../../../data/sprite_studio/effect_allcheck/EffectParticleTurnToDirectionEnabled_dirMin.ssee");
 
         let _data: AnimationEffect = from_reader(s.as_bytes()).unwrap();
     }
